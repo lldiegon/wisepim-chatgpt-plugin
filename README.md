@@ -7,15 +7,14 @@ enrich descriptions and attributes, translate content, and clean inconsistent da
 
 Inspect supplier evidence, images, taxonomy and channel issues. Use available
 commerce and search analytics to prioritize improvements, then prepare native
-catalog jobs using your WISEPIM settings and saved prompts. Review consequential
-changes in WISEPIM and follow the actual task through to saved results.
+catalog jobs using your WISEPIM settings and saved prompts. Use the configured approval policy and follow the actual task through to saved results.
 
 This repository contains public plugin packaging. The hosted MCP service belongs
 to the WISEPIM frontend repository; no backend code or credentials are included here.
 
 The intended endpoint is `https://wisepim.com/mcp`. It is a deployment target,
 not a claim that the service is enabled, tested in ChatGPT, approved or published.
-The package is version `0.2.4` and connects to one explicitly authorized project.
+The package is version `0.2.5` and connects to one explicitly authorized project.
 It includes seventeen skills for the matching 35-tool MCP service contract.
 
 
@@ -27,7 +26,7 @@ Research is evidence-only and requires its own execution permission. Findings do
 
 Discover native job schemas and get a planning-only estimate before preparing a job. A catalog-job budget is an admission estimate ceiling, not a hard final-spend cap. Native job field policies and review gates remain authoritative after launch; the plugin does not expose arbitrary automation, bypass a gate or publish products. Track actual task/run receipts and reread saved products before claiming completion.
 
-The expanded package uses explicit catalog, quality, task, settings, prompts and analytics reads; reviewed catalog/settings/prompt writes; and enrichment, research and catalog-job execution. Existing grants do not gain new scopes automatically. Reconnect and consent only to the operations needed for your account and workflows.
+The expanded package uses explicit catalog, quality, task, settings, prompts and analytics reads; catalog/settings/prompt writes under the configured approval policy; and enrichment, research and catalog-job execution. Existing grants do not gain new scopes automatically. Reconnect and consent only to the operations needed for your account and workflows.
 
 ## Build
 
@@ -65,10 +64,7 @@ to update the non-secret package setting after registration. The proposed defaul
 client ID is not evidence that a client has been provisioned.
 No callback URL, client secret, bearer token, or customer account belongs in this repo.
 
-The package requests explicit permissions for its supported workflows. A translation preview requires approval in the ordinary
-authenticated WISEPIM review page. The assistant cannot approve its own work.
-Queued work is not completed work. Read-only users and revoked connections must
-remain constrained by current server-side permissions.
+The package requests explicit permissions for its supported workflows. New connections default to approval off. Requested actions can proceed from a durable preview without an extra browser confirmation. The account owner can enable required approval in WISEPIM connected apps settings. Enabled approval requires authenticated review of the exact proposal; the assistant cannot satisfy or disable that gate on the owner’s behalf. Project permissions, source checks, estimates and native job/field policies remain enforced in either mode. Queued work is not completed work; task receipts and saved products provide the execution evidence.
 
 Channel-readiness reviews summarize available evidence and unverified requirements;
 they do not certify marketplace acceptance, validate a feed, or publish products.

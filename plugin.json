@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wisepim",
-  "version": "0.2.4",
-  "description": "Set up WISEPIM, research product facts, enrich and translate content, and prepare catalog improvements with approval in WISEPIM.",
+  "version": "0.2.5",
+  "description": "Set up WISEPIM, research product facts, enrich and translate content, and run bounded catalog workflows with configurable approval.",
   "author": {
     "name": "WISEPIM",
     "url": "https://wisepim.com"
@@ -25,21 +25,21 @@
       "interface": {
         "displayName": "WISEPIM",
         "shortDescription": "AI PIM for product catalogs",
-        "longDescription": "Bring your product catalog into the conversation with WISEPIM, the AI-powered product information management (PIM) workspace. Get help creating an account and setting up a first catalog, or connect an existing project. Research product facts with source evidence, enrich descriptions and attributes, translate content, and clean inconsistent data. Inspect supplier documents, images, taxonomy and channel issues. Use available commerce and search analytics to prioritize the products that need attention.\n\nPrepare improvements using your WISEPIM settings and saved prompts, review the selected products and proposed operation in WISEPIM, and follow the actual task through to saved results. Each connection authorizes one project, with explicit permissions for its supported workflows. Consequential changes require approval in WISEPIM. Channel export and publication are not included.",
+        "longDescription": "Bring your product catalog into the conversation with WISEPIM, the AI-powered product information management (PIM) workspace. Get help creating an account and setting up a first catalog, or connect an existing project. Research product facts with source evidence, enrich descriptions and attributes, translate content, and clean inconsistent data. Inspect supplier documents, images, taxonomy and channel issues. Use available commerce and search analytics to prioritize the products that need attention.\n\nPrepare improvements using your WISEPIM settings and saved prompts, inspect the selected products and proposed operation, and follow the actual task through to saved results. Each connection authorizes one project, with explicit permissions for its supported workflows. Approval is configurable per connection and defaults off for new connections. The account owner can enable required approval in WISEPIM; previews, project permissions and source checks remain enforced. Channel export and publication are not included.",
         "developerName": "WISEPIM",
         "category": "Productivity",
         "capabilities": [
           "Guided account and catalog setup",
           "Product research, enrichment and translation",
           "Catalog quality and performance analysis",
-          "Reviewed catalog improvement jobs"
+          "Catalog jobs with configurable approval"
         ],
         "websiteURL": "https://wisepim.com",
         "privacyPolicyURL": "https://wisepim.com/privacy",
         "termsOfServiceURL": "https://wisepim.com/terms",
         "defaultPrompt": [
           "Help me create or connect my WISEPIM account and set up my first catalog.",
-          "Find products missing key information, then prepare descriptions and German translations for my review.",
+          "Find products missing key information, enrich descriptions and translate them into German using my configured policy.",
           "Research missing facts for products I select and show the evidence before proposing changes."
         ],
         "brandColor": "#3B82F6",
@@ -49,7 +49,7 @@
       },
       "onboardingSkill": "./skills/start-with-wisepim/SKILL.md",
       "publication": {
-        "release_notes": "Version 0.2.4 updates the 17 pinned WISEPIM skills and clarifies image assessment and existing-image retrieval. MCP workflows do not generate images, video or audio. Consequential actions remain project-scoped and require approval in WISEPIM."
+        "release_notes": "Version 0.2.5 supports the configured WISEPIM connection approval policy. New connections default to approval off; owners can enable required WISEPIM review. Durable previews, permissions, source checks, estimates and task readback remain part of supported workflows. MCP image workflows assess and retrieve existing images, without generating images, video or audio."
       }
     }
   },

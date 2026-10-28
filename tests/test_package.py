@@ -168,10 +168,26 @@ class PackageTests(unittest.TestCase):
         out.mkdir()
         outside = self.root.parent / "outside.txt"
         outside.write_text("Keep this content")
-        (out / "wisepim-chatgpt-0.1.0.zip").symlink_to(outside)
+        version = json.loads((self.root / "plugin.json").read_text())["version"]
+        (out / f"wisepim-chatgpt-{version}.zip").symlink_to(outside)
         with self.assertRaisesRegex(ValueError, "symlinked output files"):
             package.build(self.root)
         self.assertEqual("Keep this content", outside.read_text())
+
+    def test_rejects_subtitle_over_portal_limit(self):
+        path = self.root / "plugin.json"
+        p = json.loads(path.read_text())
+        p["extensions"]["com.openai"]["interface"]["shortDescription"] = "x" * 31
+        path.write_text(json.dumps(p))
+        with self.assertRaisesRegex(ValueError, "30 characters or fewer"):
+            package.check(self.root)
+
+    def test_accepts_subtitle_at_portal_limit(self):
+        path = self.root / "plugin.json"
+        p = json.loads(path.read_text())
+        p["extensions"]["com.openai"]["interface"]["shortDescription"] = "x" * 30
+        path.write_text(json.dumps(p))
+        package.check(self.root)
 
 
 if __name__ == "__main__":

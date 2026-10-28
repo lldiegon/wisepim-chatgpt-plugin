@@ -111,6 +111,9 @@ def check(root=ROOT, preview=False):
         if kind == "positive" and any(not case.get("tools_triggered") for case in cases):
             raise ValueError("Positive review cases require actual tool names")
     interface = ext["interface"]
+    subtitle = interface.get("shortDescription", "")
+    if not isinstance(subtitle, str) or not subtitle.strip() or len(subtitle) > 30:
+        raise ValueError("Subtitle must be nonempty and 30 characters or fewer")
     for key in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL"):
         if not interface.get(key, "").startswith("https://wisepim.com/") and interface.get(key) != "https://wisepim.com":
             raise ValueError(f"Publisher HTTPS URL required: {key}")

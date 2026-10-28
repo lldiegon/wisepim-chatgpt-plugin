@@ -1,40 +1,45 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wisepim",
-  "version": "0.1.2",
-  "description": "Audit catalog quality, prepare native translations, and review channel readiness with WisePIM.",
+  "version": "0.1.3",
+  "description": "Connect WISEPIM product information management to ChatGPT and Codex: search your catalog, review product data quality, and prepare native AI enrichment and translations for approval in WISEPIM.",
   "author": {
     "name": "WISEPIM",
     "url": "https://wisepim.com"
   },
   "homepage": "https://wisepim.com",
   "keywords": [
-    "pim",
-    "products",
-    "catalog",
-    "translation",
-    "data-quality"
+    "product information management",
+    "pim software",
+    "ai pim",
+    "product catalog management",
+    "product content management",
+    "product data enrichment",
+    "product data quality",
+    "ecommerce translation",
+    "product translation",
+    "product descriptions"
   ],
   "extensions": {
     "com.openai": {
       "interface": {
         "displayName": "WISEPIM",
-        "shortDescription": "Review and improve catalogs",
-        "longDescription": "Inspect product quality, review available channel-readiness evidence, and prepare native WisePIM translations. Each connection belongs to one project. Consequential actions require approval in WisePIM; queued work is reported separately from completed results.",
+        "shortDescription": "AI PIM for product catalogs",
+        "longDescription": "Connect WISEPIM, your product information management (PIM) workspace, to ChatGPT and Codex. Search your product catalog with precise filters, find missing descriptions, and inspect stored product data quality. Prepare native AI product data enrichment and product translation using WISEPIM workflows, project settings, and configured languages. Review the selected products, operation, and available credit estimate before approval in WISEPIM. Track actual job progress and verify saved results; queued work is not completed work. Each connection authorizes one project. Channel-readiness reviews explain available evidence and unknown requirements; they do not certify, export, or publish products.",
         "developerName": "WISEPIM",
         "category": "Productivity",
         "capabilities": [
-          "Read catalog quality",
-          "Prepare reviewed translations",
-          "Review channel-readiness evidence"
+          "Search product catalogs",
+          "Review product data quality",
+          "Prepare reviewed enrichment and translations"
         ],
         "websiteURL": "https://wisepim.com",
         "privacyPolicyURL": "https://wisepim.com/privacy",
         "termsOfServiceURL": "https://wisepim.com/terms",
         "defaultPrompt": [
-          "Find products with missing catalog content.",
-          "Prepare German translations for these products.",
-          "Review evidence that these products are ready for a sales channel."
+          "Find products missing descriptions in my connected WISEPIM project and explain the quality gaps.",
+          "Prepare German descriptions for products I select; show the translation scope and WISEPIM review link.",
+          "Review my selected products against sales-channel requirements and identify missing or unverified evidence."
         ],
         "brandColor": "#3B82F6",
         "composerIcon": "./assets/icon.png",

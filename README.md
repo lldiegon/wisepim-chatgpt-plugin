@@ -1,12 +1,20 @@
 # WisePIM for ChatGPT and Codex
 
-Public plugin packaging for catalog quality audits, native product translations,
-and evidence-based channel-readiness reviews. The hosted MCP service belongs to
-the WisePIM frontend repository; this repository contains no backend code or credentials.
+Connect WISEPIM, your product information management (PIM) workspace, to ChatGPT
+and Codex. Search your product catalog, inspect product data quality, and prepare
+native AI product data enrichment and product translation for approval in WISEPIM.
+
+Use the plugin to find missing descriptions, review catalog quality evidence,
+prepare translations into configured languages, and track native jobs through to
+saved results. Channel-readiness reviews identify gaps and unknown requirements;
+they do not certify, export, or publish products.
+
+This repository contains public plugin packaging. The hosted MCP service belongs
+to the WisePIM frontend repository; no backend code or credentials are included here.
 
 The intended endpoint is `https://wisepim.com/mcp`. It is a deployment target,
 not a claim that the service is enabled, tested in ChatGPT, approved or published.
-The package is version `0.1.2` and connects to one explicitly authorized project.
+The package is version `0.1.3` and connects to one explicitly authorized project.
 
 ## Build
 

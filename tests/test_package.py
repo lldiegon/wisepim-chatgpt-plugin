@@ -90,13 +90,58 @@ class PackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "audience"):
             package.check(self.root)
 
-    def test_requires_five_positive_three_negative_cases(self):
+    def review_fixture(self):
+        return {"test_cases": {
+            "positive": [{"description": f"Synthetic case {i}", "prompt": "Inspect the synthetic record.", "tools_triggered": "example_read", "expected_output": "Return the synthetic fixture result."} for i in range(5)],
+            "negative": [{"description": f"Synthetic denied case {i}", "prompt": "Perform an unsupported action."} for i in range(3)],
+        }}
+
+    def test_requires_five_positive_three_negative_cases_only_for_private_overlay(self):
+        private = self.review_fixture()
+        private["test_cases"]["positive"].pop()
+        with self.assertRaisesRegex(ValueError, "exactly 5"):
+            package.validate_review_metadata(private)
+        package.check(self.root)
+
+    def test_public_source_rejects_embedded_private_review(self):
         path = self.root / "plugin.json"
         p = json.loads(path.read_text())
-        p["extensions"]["com.openai"]["review"]["test_cases"]["positive"].pop()
+        p["extensions"]["com.openai"]["review"] = self.review_fixture()
         path.write_text(json.dumps(p))
-        with self.assertRaisesRegex(ValueError, "exactly 5"):
+        with self.assertRaisesRegex(ValueError, "Public source must not contain"):
             package.check(self.root)
+
+    def test_private_overlay_changes_only_ignored_review_archive(self):
+        private = self.root.parent / "private-review.json"
+        private.write_text(json.dumps(self.review_fixture()))
+        before = (self.root / "plugin.json").read_bytes()
+        normal = package.build(self.root)
+        with zipfile.ZipFile(normal) as archive:
+            manifest = json.loads(archive.read("plugin.json"))
+            self.assertNotIn("review", manifest["extensions"]["com.openai"])
+        reviewed = package.build(self.root, review_metadata=private)
+        self.assertTrue(reviewed.name.endswith("-review.zip"))
+        with zipfile.ZipFile(reviewed) as archive:
+            manifest = json.loads(archive.read("plugin.json"))
+            self.assertEqual(self.review_fixture(), manifest["extensions"]["com.openai"]["review"])
+            self.assertFalse(any("submission" in name or "reviewer" in name for name in archive.namelist()))
+        self.assertEqual(before, (self.root / "plugin.json").read_bytes())
+
+    def test_private_overlay_input_cannot_live_in_public_source(self):
+        path = self.root / "review-metadata.json"
+        path.write_text(json.dumps(self.review_fixture()))
+        with self.assertRaisesRegex(ValueError, "outside the public repository"):
+            package.build(self.root, review_metadata=path)
+
+    def test_root_submission_plans_never_enter_public_zip(self):
+        folder = self.root / "submission"
+        folder.mkdir()
+        (folder / "plan.md").write_text("PRIVATE_SYNTHETIC_PLAN")
+        (self.root / "listing-strategy.md").write_text("PRIVATE_SYNTHETIC_STRATEGY")
+        archive = package.build(self.root)
+        with zipfile.ZipFile(archive) as zipped:
+            self.assertFalse(any("submission" in name or "listing-strategy" in name for name in zipped.namelist()))
+            self.assertNotIn(b"PRIVATE_SYNTHETIC", b"".join(zipped.read(name) for name in zipped.namelist()))
 
     def test_rejects_hooks_for_directory_submission(self):
         path = self.root / "plugin.json"
@@ -189,29 +234,24 @@ class PackageTests(unittest.TestCase):
         path.write_text(json.dumps(p))
         package.check(self.root)
 
-    def test_requires_expected_output_for_every_positive_case(self):
-        path = self.root / "plugin.json"
-        original = json.loads(path.read_text())
+    def test_requires_expected_output_for_every_private_positive_case(self):
         for index in range(5):
             for invalid in (None, "", "   ", 42):
                 with self.subTest(index=index, expected_output=invalid):
-                    p = json.loads(json.dumps(original))
-                    case = p["extensions"]["com.openai"]["review"]["test_cases"]["positive"][index]
+                    private = self.review_fixture()
+                    case = private["test_cases"]["positive"][index]
                     if invalid is None:
                         case.pop("expected_output", None)
                     else:
                         case["expected_output"] = invalid
-                    path.write_text(json.dumps(p))
                     with self.assertRaisesRegex(ValueError, "expected_output"):
-                        package.check(self.root)
+                        package.validate_review_metadata(private)
 
-    def test_task_case_requires_actual_returned_receipt(self):
-        p = json.loads((self.root / "plugin.json").read_text())
-        case = p["extensions"]["com.openai"]["review"]["test_cases"]["positive"][4]
-        self.assertIn("actual returned change/task receipt", case["description"])
-        self.assertIn("pending", case["expected_output"])
-        self.assertIn("failed", case["expected_output"])
-        self.assertIn("target-locale product content", case["expected_output"])
+    def test_credentials_are_not_accepted_as_review_overlay_fields(self):
+        private = self.review_fixture()
+        private["test_credentials"] = "Synthetic denied credential"
+        with self.assertRaisesRegex(ValueError, "credentials belong in the secure portal"):
+            package.validate_review_metadata(private)
 
 
 if __name__ == "__main__":

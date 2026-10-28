@@ -95,6 +95,16 @@ def sync(source, allow_uncommitted=False, root=ROOT):
     (root / "skills.lock.json").write_text(json.dumps(lock, indent=2) + "\n")
 
 
+def has_private_review_metadata(value):
+    if isinstance(value, dict):
+        return bool({"review", "test_cases", "test_credentials", "reviewer_instructions"} & value.keys()) or any(
+            has_private_review_metadata(item) for item in value.values()
+        )
+    if isinstance(value, list):
+        return any(has_private_review_metadata(item) for item in value)
+    return False
+
+
 def check(root=ROOT, preview=False):
     p = json.loads((root / "plugin.json").read_text())
     if p.get("$schema") != "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json" or p.get("name") != "wisepim":
@@ -104,17 +114,8 @@ def check(root=ROOT, preview=False):
     ext = p["extensions"]["com.openai"]
     if any(key in ext for key in ("apps", "hooks")):
         raise ValueError("Public submission cannot include app references or lifecycle hooks")
-    for kind, count in (("positive", 5), ("negative", 3)):
-        cases = ext["review"]["test_cases"][kind]
-        if len(cases) != count or any(not case.get("description") or not case.get("prompt") for case in cases):
-            raise ValueError(f"Review requires exactly {count} complete {kind} cases")
-        if kind == "positive" and any(not case.get("tools_triggered") for case in cases):
-            raise ValueError("Positive review cases require actual tool names")
-        if kind == "positive" and any(
-            not isinstance(case.get("expected_output"), str) or not case["expected_output"].strip()
-            for case in cases
-        ):
-            raise ValueError("Positive review cases require nonempty expected_output")
+    if has_private_review_metadata(p):
+        raise ValueError("Public source must not contain private review metadata")
     interface = ext["interface"]
     subtitle = interface.get("shortDescription", "")
     if not isinstance(subtitle, str) or not subtitle.strip() or len(subtitle) > 30:
@@ -152,13 +153,46 @@ def check(root=ROOT, preview=False):
     return p, sorted((*FIXED_FILES, *files))
 
 
-def build(root=ROOT, preview=False):
+def validate_review_metadata(metadata):
+    """Validate a privately supplied overlay without storing it in source."""
+    if not isinstance(metadata, dict) or set(metadata) != {"test_cases"}:
+        raise ValueError("Private review metadata must contain only test_cases; credentials belong in the secure portal")
+    tests = metadata["test_cases"]
+    if not isinstance(tests, dict) or set(tests) != {"positive", "negative"}:
+        raise ValueError("Private review metadata needs positive and negative case lists")
+    for kind, count in (("positive", 5), ("negative", 3)):
+        cases = tests[kind]
+        if not isinstance(cases, list) or len(cases) != count:
+            raise ValueError(f"Review requires exactly {count} complete {kind} cases")
+        allowed = {"description", "prompt", "tools_triggered", "expected_output"}
+        for case in cases:
+            if not isinstance(case, dict) or set(case) - allowed:
+                raise ValueError("Private review cases contain unsupported fields")
+            required = {"description", "prompt"} | ({"tools_triggered", "expected_output"} if kind == "positive" else set())
+            for key in required:
+                if not isinstance(case.get(key), str) or not case[key].strip() or len(case[key]) > 10000:
+                    raise ValueError(f"Private review cases require nonempty bounded {key}")
+    return metadata
+
+
+def load_review_metadata(path, root):
+    path = Path(path)
+    if path.resolve().is_relative_to(root.resolve()):
+        raise ValueError("Private review metadata must be outside the public repository")
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 256000:
+        raise ValueError("Private review metadata must be a regular JSON file under 256 KB")
+    return validate_review_metadata(json.loads(path.read_text()))
+
+
+def build(root=ROOT, preview=False, review_metadata=None):
     manifest, files = check(root, preview)
+    if review_metadata is not None:
+        manifest["extensions"]["com.openai"]["review"] = load_review_metadata(review_metadata, root)
     out = root / "dist"
     if out.is_symlink():
         raise ValueError("Refusing symlinked output directory")
     out.mkdir(exist_ok=True)
-    suffix = "-preview" if preview else ""
+    suffix = ("-preview" if preview else "") + ("-review" if review_metadata is not None else "")
     archive = out / f"wisepim-chatgpt-{manifest['version']}{suffix}.zip"
     if archive.is_symlink() or archive.with_suffix(".zip.sha256").is_symlink():
         raise ValueError("Refusing symlinked output files")
@@ -167,7 +201,8 @@ def build(root=ROOT, preview=False):
             info = zipfile.ZipInfo(rel, date_time=(2026, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o100644 << 16
-            zipf.writestr(info, (root / rel).read_bytes())
+            data = (json.dumps(manifest, indent=2) + "\n").encode() if rel == "plugin.json" and review_metadata is not None else (root / rel).read_bytes()
+            zipf.writestr(info, data)
     (archive.with_suffix(".zip.sha256")).write_text(digest(archive.read_bytes()) + "  " + archive.name + "\n")
     return archive
 
@@ -178,9 +213,12 @@ def main():
     parser.add_argument("--source", type=Path, default=ROOT.parent / "wisepim-skills")
     parser.add_argument("--allow-uncommitted", action="store_true", help="Preview sync only")
     parser.add_argument("--preview", action="store_true", help="Allow preview provenance for check/build")
+    parser.add_argument("--review-metadata", type=Path, help="Build only: private test-case JSON outside this public repository")
     parser.add_argument("--client-id", help="Non-secret public OAuth client ID actually registered with WisePIM")
     args = parser.parse_args()
     try:
+        if args.review_metadata is not None and args.command != "build":
+            raise ValueError("--review-metadata is supported only by build")
         if args.command == "configure-client":
             if not args.client_id or not re.fullmatch(r"[A-Za-z0-9._~:/-]{1,512}", args.client_id):
                 raise ValueError("Supply the registered public --client-id")
@@ -196,7 +234,7 @@ def main():
             _, files = check(preview=args.preview)
             print(f"Validated {len(files)} public package files; deployment and portal review remain separate.")
         else:
-            print(build(preview=args.preview))
+            print(build(preview=args.preview, review_metadata=args.review_metadata))
     except (ValueError, KeyError, OSError) as exc:
         parser.exit(1, f"Package error: {exc}\n")
 

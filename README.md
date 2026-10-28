@@ -61,14 +61,15 @@ remain constrained by current server-side permissions.
 Channel-readiness reviews summarize available evidence and unverified requirements;
 they do not certify marketplace acceptance, validate a feed, or publish products.
 
-## Submission
+## Public package boundary
 
-Use the concrete [submission checklist](submission/README.md). Review prompts are
-embedded in `plugin.json`: exactly five positive and three negative cases.
-Reviewer credentials and a live demo recording are supplied privately in the
-OpenAI dashboard. Automated local validation is not a replacement for platform review.
-The [synthetic walkthrough](submission/synthetic-walkthrough.md) records independent
-instruction checks without representing them as real host or provider execution.
+Public source and normal ZIPs contain runtime metadata and skills only. Internal
+planning, reviewer scenarios and credentials stay outside this repository.
+Operators can optionally provide external private test-case JSON with
+`python3 scripts/package.py build --review-metadata /absolute/private/review-metadata.json`.
+The builder validates that overlay and writes an ignored `dist/*-review.zip`;
+it never changes source metadata. Reviewer credentials belong in the secure
+platform form and are not accepted in this overlay.
 
 Official references, checked 2026-10-28:
 

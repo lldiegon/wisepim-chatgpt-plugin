@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wisepim",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Set up WISEPIM, research product facts, enrich and translate content, and prepare catalog improvements with approval in WISEPIM.",
   "author": {
     "name": "WISEPIM",
@@ -25,7 +25,7 @@
       "interface": {
         "displayName": "WISEPIM",
         "shortDescription": "AI PIM for product catalogs",
-        "longDescription": "Bring your product catalog into the conversation with WISEPIM, the AI-powered product information management (PIM) workspace. Get help creating an account and setting up a first catalog, or connect an existing project. Research product facts with source evidence, enrich descriptions and attributes, translate content, and clean inconsistent data. Inspect supplier documents, images, taxonomy and channel issues. Use available commerce and search analytics to prioritize the products that need attention.\n\nPrepare improvements using your WISEPIM settings and saved prompts, review the selected products and credit estimate in WISEPIM, and follow the actual task through to saved results. Each connection authorizes one project. Research and catalog jobs require their own permissions. Catalog-job estimates are admission ceilings, not a hard final-spend cap. Publishing products remains a separate action.",
+        "longDescription": "Bring your product catalog into the conversation with WISEPIM, the AI-powered product information management (PIM) workspace. Get help creating an account and setting up a first catalog, or connect an existing project. Research product facts with source evidence, enrich descriptions and attributes, translate content, and clean inconsistent data. Inspect supplier documents, images, taxonomy and channel issues. Use available commerce and search analytics to prioritize the products that need attention.\n\nPrepare improvements using your WISEPIM settings and saved prompts, review the selected products and proposed operation in WISEPIM, and follow the actual task through to saved results. Each connection authorizes one project, with explicit permissions for its supported workflows. Consequential changes require approval in WISEPIM. Channel export and publication are not included.",
         "developerName": "WISEPIM",
         "category": "Productivity",
         "capabilities": [
@@ -40,8 +40,7 @@
         "defaultPrompt": [
           "Help me create or connect my WISEPIM account and set up my first catalog.",
           "Find products missing key information, then prepare descriptions and German translations for my review.",
-          "Research missing facts for products I select and show the evidence before proposing changes.",
-          "Use available search and commerce data to prioritize catalog improvements."
+          "Research missing facts for products I select and show the evidence before proposing changes."
         ],
         "brandColor": "#3B82F6",
         "composerIcon": "./assets/icon.png",
@@ -50,7 +49,7 @@
       },
       "onboardingSkill": "./skills/start-with-wisepim/SKILL.md",
       "publication": {
-        "release_notes": "Version 0.2.2 improves guided signup and catalog setup discovery and clarifies the research, enrichment, translation, analytics and reviewed catalog-job workflows. Includes 17 skills pinned to the reviewed shared library, with project-scoped access and WISEPIM approval for consequential actions."
+        "release_notes": "Version 0.2.3 refines the WISEPIM catalog workflow description and provides three starter prompts for account setup, enrichment and product research. Retains 17 pinned skills, guided onboarding, project-scoped access and WISEPIM approval for consequential actions."
       }
     }
   },

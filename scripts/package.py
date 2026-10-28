@@ -138,6 +138,16 @@ def check(root=ROOT, preview=False):
     subtitle = interface.get("shortDescription", "")
     if not isinstance(subtitle, str) or not subtitle.strip() or len(subtitle) > 30:
         raise ValueError("Subtitle must be nonempty and 30 characters or fewer")
+    prompts = interface.get("defaultPrompt", [])
+    if isinstance(prompts, str):
+        prompts = [prompts]
+    if not isinstance(prompts, list) or len(prompts) > 3:
+        raise ValueError("Listing metadata permits no more than 3 starter prompts")
+    if any(
+        not isinstance(prompt, str) or not prompt.strip() or len(prompt) > 128 or "\n" in prompt or "\r" in prompt
+        for prompt in prompts
+    ):
+        raise ValueError("Each starter prompt must be nonempty, single-line and at most 128 characters")
     for key in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL"):
         if not interface.get(key, "").startswith("https://wisepim.com/") and interface.get(key) != "https://wisepim.com":
             raise ValueError(f"Publisher HTTPS URL required: {key}")

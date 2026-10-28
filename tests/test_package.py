@@ -290,6 +290,32 @@ class PackageTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "onboardingSkill"):
                     package.check(self.root)
 
+    def test_rejects_four_starter_prompts_but_accepts_three(self):
+        path = self.root / "plugin.json"
+        manifest = json.loads(path.read_text())
+        interface = manifest["extensions"]["com.openai"]["interface"]
+        interface["defaultPrompt"] = [f"Inspect synthetic record {index}." for index in range(4)]
+        path.write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError, "no more than 3 starter prompts"):
+            package.check(self.root)
+        interface["defaultPrompt"].pop()
+        path.write_text(json.dumps(manifest))
+        package.check(self.root)
+
+    def test_starter_prompt_text_uses_the_portal_length_and_line_limits(self):
+        path = self.root / "plugin.json"
+        manifest = json.loads(path.read_text())
+        interface = manifest["extensions"]["com.openai"]["interface"]
+        for invalid in ("", "   ", "x" * 129, "First line\nSecond line", 12):
+            with self.subTest(prompt=invalid):
+                interface["defaultPrompt"] = [invalid]
+                path.write_text(json.dumps(manifest))
+                with self.assertRaisesRegex(ValueError, "Each starter prompt"):
+                    package.check(self.root)
+        interface["defaultPrompt"] = "x" * 128
+        path.write_text(json.dumps(manifest))
+        package.check(self.root)
+
 
 if __name__ == "__main__":
     unittest.main()

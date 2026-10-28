@@ -15,7 +15,7 @@ to the WISEPIM frontend repository; no backend code or credentials are included 
 
 The intended endpoint is `https://wisepim.com/mcp`. It is a deployment target,
 not a claim that the service is enabled, tested in ChatGPT, approved or published.
-The package is version `0.2.2` and connects to one explicitly authorized project.
+The package is version `0.2.3` and connects to one explicitly authorized project.
 It includes seventeen skills for the matching 35-tool MCP service contract.
 
 
@@ -85,7 +85,9 @@ platform form and are not accepted in this overlay.
 Private positive cases use the official `expected_behavior` field. The builder
 also accepts legacy `expected_output` inputs and normalizes them in the review
 ZIP. Public release notes live under `extensions.com.openai.publication`;
-private cases remain outside source and normal archives.
+private cases remain outside source and normal archives. Listing metadata uses at
+most three starter prompts; each must be a nonempty, single-line string of at
+most 128 characters.
 
 Official references, checked 2026-10-28:
 

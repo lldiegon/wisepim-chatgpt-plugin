@@ -12,7 +12,24 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "https://github.com/lldiegon/wisepim-skills"
-EXPECTED_SKILLS = {"catalog-quality-audit", "prepare-product-translations", "channel-readiness-review"}
+EXPECTED_SKILLS = {
+    'analyze-commerce-performance',
+    'assess-product-images',
+    'catalog-quality-audit',
+    'channel-readiness-review',
+    'clean-catalog-data',
+    'enrich-from-research',
+    'enrich-from-supplier-documents',
+    'enrich-product-content',
+    'manage-enrichment-prompts',
+    'optimize-seo-performance',
+    'organize-product-taxonomy',
+    'prepare-product-translations',
+    'prioritize-catalog-opportunities',
+    'remediate-channel-issues',
+    'research-product-facts',
+    'run-catalog-improvement-jobs',
+}
 FIXED_FILES = ("plugin.json", "mcp.json", "assets/icon.png", "assets/logo.png", "skills.lock.json", "LICENSE")
 
 

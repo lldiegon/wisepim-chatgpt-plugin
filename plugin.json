@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wisepim",
-  "version": "0.1.3",
-  "description": "Connect WISEPIM product information management to ChatGPT and Codex: search your catalog, review product data quality, and prepare native AI enrichment and translations for approval in WISEPIM.",
+  "version": "0.2.0",
+  "description": "Research product facts, enrich and translate catalog content, analyze performance, and prepare reviewed WisePIM catalog improvement jobs.",
   "author": {
     "name": "WISEPIM",
     "url": "https://wisepim.com"
@@ -25,21 +25,22 @@
       "interface": {
         "displayName": "WISEPIM",
         "shortDescription": "AI PIM for product catalogs",
-        "longDescription": "Connect WISEPIM, your product information management (PIM) workspace, to ChatGPT and Codex. Search your product catalog with precise filters, find missing descriptions, and inspect stored product data quality. Prepare native AI product data enrichment and product translation using WISEPIM workflows, project settings, and configured languages. Review the selected products, operation, and available credit estimate before approval in WISEPIM. Track actual job progress and verify saved results; queued work is not completed work. Each connection authorizes one project. Channel-readiness reviews explain available evidence and unknown requirements; they do not certify, export, or publish products.",
+        "longDescription": "Connect WISEPIM, your product information management (PIM) workspace, to ChatGPT and Codex. Research selected product facts with source evidence, inspect supplier documents, prepare native enrichment and translations, clean catalog data, analyze persisted commerce and search performance, and prioritize product improvements. Inspect images, taxonomy and channel issues, then prepare supported native catalog jobs. Each connection belongs to one project. New research and job execution require explicit permissions and approval in WISEPIM. Review scope, settings and credit estimates before execution; native jobs retain their own review gates and estimates are not a hard final-spend cap. Track actual progress and verify stored results. Channel evidence does not establish publication or acceptance.",
         "developerName": "WISEPIM",
         "category": "Productivity",
         "capabilities": [
-          "Search product catalogs",
-          "Review product data quality",
-          "Prepare reviewed enrichment and translations"
+          "Research product facts",
+          "Enrich and translate products",
+          "Analyze catalog opportunities",
+          "Run reviewed catalog jobs"
         ],
         "websiteURL": "https://wisepim.com",
         "privacyPolicyURL": "https://wisepim.com/privacy",
         "termsOfServiceURL": "https://wisepim.com/terms",
         "defaultPrompt": [
-          "Find products missing descriptions in my connected WISEPIM project and explain the quality gaps.",
-          "Prepare German descriptions for products I select; show the translation scope and WISEPIM review link.",
-          "Review my selected products against sales-channel requirements and identify missing or unverified evidence."
+          "Research missing facts for products I select, then prepare reviewed descriptions and German translations.",
+          "Analyze selected products and prioritize content improvements using available search and commerce evidence.",
+          "Inspect image, taxonomy and channel issues, then prepare a bounded catalog job for my review."
         ],
         "brandColor": "#3B82F6",
         "composerIcon": "./assets/icon.png",

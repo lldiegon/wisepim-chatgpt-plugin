@@ -19,7 +19,14 @@
               "quality:read",
               "tasks:read",
               "settings:read",
-              "enrichment:execute"
+              "prompts:read",
+              "analytics:read",
+              "catalog:write",
+              "settings:write",
+              "prompts:write",
+              "enrichment:execute",
+              "research:execute",
+              "jobs:execute"
             ]
           }
         }

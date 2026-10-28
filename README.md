@@ -14,7 +14,18 @@ to the WisePIM frontend repository; no backend code or credentials are included 
 
 The intended endpoint is `https://wisepim.com/mcp`. It is a deployment target,
 not a claim that the service is enabled, tested in ChatGPT, approved or published.
-The package is version `0.1.3` and connects to one explicitly authorized project.
+The package is version `0.2.0` and connects to one explicitly authorized project.
+
+
+## Catalog workflows
+
+Sixteen bundled skills cover catalog quality, product web research, research-backed native enrichment, translation, bulk text cleanup, commerce analysis, selected-product SEO evidence and opportunity planning, supplier documents, images, taxonomy, prompts/settings, channel issues and native improvement jobs. The [canonical skill library](https://github.com/lldiegon/wisepim-skills) describes each workflow.
+
+Research is evidence-only and requires its own execution permission. Findings do not automatically replace catalog fields or images. Stored supplier documents use supported bounded extraction; unsupported PDF/OCR and new file imports remain in their native workflows. Supplier jobs operate on already imported rows. Analytics reads persisted source evidence and reports mapping/coverage limits; it does not refresh providers or establish causal uplift.
+
+Discover native job schemas and get a planning-only estimate before preparing a job. A catalog-job budget is an admission estimate ceiling, not a hard final-spend cap. Native job field policies and review gates remain authoritative after launch; the plugin does not expose arbitrary automation, bypass a gate or publish products. Track actual task/run receipts and reread saved products before claiming completion.
+
+The expanded package uses explicit catalog, quality, task, settings, prompts and analytics reads; reviewed catalog/settings/prompt writes; and enrichment, research and catalog-job execution. Existing grants do not gain new scopes automatically. Reconnect and consent only to the operations needed for your account and workflows.
 
 ## Build
 
@@ -52,8 +63,7 @@ to update the non-secret package setting after registration. The proposed defaul
 client ID is not evidence that a client has been provisioned.
 No callback URL, client secret, bearer token, or customer account belongs in this repo.
 
-The package requests catalog, stored quality, task and settings reads plus native
-enrichment execution. A translation preview requires approval in the ordinary
+The package requests the explicit permissions described below for its expanded workflows. A translation preview requires approval in the ordinary
 authenticated WisePIM review page. The assistant cannot approve its own work.
 Queued work is not completed work. Read-only users and revoked connections must
 remain constrained by current server-side permissions.

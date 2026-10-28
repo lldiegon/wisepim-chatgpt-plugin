@@ -123,7 +123,8 @@ class PackageTests(unittest.TestCase):
         self.assertTrue(reviewed.name.endswith("-review.zip"))
         with zipfile.ZipFile(reviewed) as archive:
             manifest = json.loads(archive.read("plugin.json"))
-            self.assertEqual(self.review_fixture(), manifest["extensions"]["com.openai"]["review"])
+            self.assertEqual(package.validate_review_metadata(self.review_fixture()), manifest["extensions"]["com.openai"]["review"])
+            self.assertNotIn('"expected_output":', json.dumps(manifest))
             self.assertFalse(any("submission" in name or "reviewer" in name for name in archive.namelist()))
         self.assertEqual(before, (self.root / "plugin.json").read_bytes())
 
@@ -252,6 +253,42 @@ class PackageTests(unittest.TestCase):
         private["test_credentials"] = "Synthetic denied credential"
         with self.assertRaisesRegex(ValueError, "credentials belong in the secure portal"):
             package.validate_review_metadata(private)
+
+    def test_normalizes_legacy_outcomes_without_mutating_private_input(self):
+        private = self.review_fixture()
+        normalized = package.validate_review_metadata(private)
+        self.assertIn("expected_output", private["test_cases"]["positive"][0])
+        for case in normalized["test_cases"]["positive"]:
+            self.assertNotIn("expected_output", case)
+            self.assertEqual("Return the synthetic fixture result.", case["expected_behavior"])
+
+    def test_accepts_official_expected_behavior_field(self):
+        private = self.review_fixture()
+        for case in private["test_cases"]["positive"]:
+            case["expected_behavior"] = case.pop("expected_output")
+        self.assertEqual(private, package.validate_review_metadata(private))
+
+    def test_rejects_conflicting_outcome_aliases(self):
+        private = self.review_fixture()
+        private["test_cases"]["positive"][0]["expected_behavior"] = "A contradictory synthetic outcome."
+        with self.assertRaisesRegex(ValueError, "Conflicting"):
+            package.validate_review_metadata(private)
+
+    def test_rejects_overlong_positive_description(self):
+        private = self.review_fixture()
+        private["test_cases"]["positive"][0]["description"] = "x" * 4001
+        with self.assertRaisesRegex(ValueError, "description"):
+            package.validate_review_metadata(private)
+
+    def test_onboarding_skill_must_reference_an_included_skill(self):
+        path = self.root / "plugin.json"
+        manifest = json.loads(path.read_text())
+        for invalid in ("../outside/SKILL.md", "./skills/not-bundled/SKILL.md", ["./skills/start-with-wisepim/SKILL.md"]):
+            with self.subTest(onboarding=invalid):
+                manifest["extensions"]["com.openai"]["onboardingSkill"] = invalid
+                path.write_text(json.dumps(manifest))
+                with self.assertRaisesRegex(ValueError, "onboardingSkill"):
+                    package.check(self.root)
 
 
 if __name__ == "__main__":

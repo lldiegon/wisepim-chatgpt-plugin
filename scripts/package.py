@@ -161,6 +161,11 @@ def check(root=ROOT, preview=False):
     if not preview and (lock.get("sourceDirty") or not re.fullmatch(r"[0-9a-f]{40}", lock.get("commit") or "")):
         raise ValueError("Release requires clean committed skill provenance")
     files = skill_files(root)
+    onboarding = ext.get("onboardingSkill")
+    if onboarding is not None and (
+        not isinstance(onboarding, str) or onboarding not in {f"./skills/{name}/SKILL.md" for name in EXPECTED_SKILLS}
+    ):
+        raise ValueError("onboardingSkill must refer to an included skill")
     if lock.get("files") != {rel: digest(data) for rel, data in files.items()}:
         raise ValueError("Vendored skills differ from the pinned source hashes")
     for rel in FIXED_FILES:
@@ -172,25 +177,38 @@ def check(root=ROOT, preview=False):
 
 
 def validate_review_metadata(metadata):
-    """Validate a privately supplied overlay without storing it in source."""
+    """Validate a private overlay and normalize legacy outcome field names."""
     if not isinstance(metadata, dict) or set(metadata) != {"test_cases"}:
         raise ValueError("Private review metadata must contain only test_cases; credentials belong in the secure portal")
     tests = metadata["test_cases"]
     if not isinstance(tests, dict) or set(tests) != {"positive", "negative"}:
         raise ValueError("Private review metadata needs positive and negative case lists")
+    normalized = {}
     for kind, count in (("positive", 5), ("negative", 3)):
         cases = tests[kind]
         if not isinstance(cases, list) or len(cases) != count:
             raise ValueError(f"Review requires exactly {count} complete {kind} cases")
-        allowed = {"description", "prompt", "tools_triggered", "expected_output"}
+        allowed = {"description", "prompt", "tools_triggered", "expected_behavior", "expected_output"}
+        normalized[kind] = []
         for case in cases:
             if not isinstance(case, dict) or set(case) - allowed:
                 raise ValueError("Private review cases contain unsupported fields")
-            required = {"description", "prompt"} | ({"tools_triggered", "expected_output"} if kind == "positive" else set())
+            current = dict(case)
+            if "expected_output" in current:
+                legacy = current.pop("expected_output")
+                if "expected_behavior" in current and current["expected_behavior"] != legacy:
+                    raise ValueError("Conflicting expected_behavior and legacy expected_output")
+                current["expected_behavior"] = legacy
+            required = {"description", "prompt"} | ({"tools_triggered", "expected_behavior"} if kind == "positive" else set())
+            # A supplied optional field must be usable, not an empty declaration.
+            required |= set(current) & {"tools_triggered", "expected_behavior"}
             for key in required:
-                if not isinstance(case.get(key), str) or not case[key].strip() or len(case[key]) > 10000:
-                    raise ValueError(f"Private review cases require nonempty bounded {key}")
-    return metadata
+                maximum = 4000 if key == "description" and kind == "positive" else 10000
+                if not isinstance(current.get(key), str) or not current[key].strip() or len(current[key]) > maximum:
+                    legacy_note = " (legacy expected_output accepted)" if key == "expected_behavior" else ""
+                    raise ValueError(f"Private review cases require nonempty bounded {key}{legacy_note}")
+            normalized[kind].append(current)
+    return {"test_cases": normalized}
 
 
 def load_review_metadata(path, root):

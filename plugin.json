@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wisepim",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Audit catalog quality, prepare native translations, and review channel readiness with WisePIM.",
   "author": {
     "name": "WISEPIM",

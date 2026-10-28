@@ -6,7 +6,7 @@ the WisePIM frontend repository; this repository contains no backend code or cre
 
 The intended endpoint is `https://wisepim.com/mcp`. It is a deployment target,
 not a claim that the service is enabled, tested in ChatGPT, approved or published.
-The package is version `0.1.1` and connects to one explicitly authorized project.
+The package is version `0.1.2` and connects to one explicitly authorized project.
 
 ## Build
 

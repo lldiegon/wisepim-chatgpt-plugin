@@ -110,6 +110,11 @@ def check(root=ROOT, preview=False):
             raise ValueError(f"Review requires exactly {count} complete {kind} cases")
         if kind == "positive" and any(not case.get("tools_triggered") for case in cases):
             raise ValueError("Positive review cases require actual tool names")
+        if kind == "positive" and any(
+            not isinstance(case.get("expected_output"), str) or not case["expected_output"].strip()
+            for case in cases
+        ):
+            raise ValueError("Positive review cases require nonempty expected_output")
     interface = ext["interface"]
     subtitle = interface.get("shortDescription", "")
     if not isinstance(subtitle, str) or not subtitle.strip() or len(subtitle) > 30:

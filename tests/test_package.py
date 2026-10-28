@@ -189,6 +189,30 @@ class PackageTests(unittest.TestCase):
         path.write_text(json.dumps(p))
         package.check(self.root)
 
+    def test_requires_expected_output_for_every_positive_case(self):
+        path = self.root / "plugin.json"
+        original = json.loads(path.read_text())
+        for index in range(5):
+            for invalid in (None, "", "   ", 42):
+                with self.subTest(index=index, expected_output=invalid):
+                    p = json.loads(json.dumps(original))
+                    case = p["extensions"]["com.openai"]["review"]["test_cases"]["positive"][index]
+                    if invalid is None:
+                        case.pop("expected_output", None)
+                    else:
+                        case["expected_output"] = invalid
+                    path.write_text(json.dumps(p))
+                    with self.assertRaisesRegex(ValueError, "expected_output"):
+                        package.check(self.root)
+
+    def test_task_case_requires_actual_returned_receipt(self):
+        p = json.loads((self.root / "plugin.json").read_text())
+        case = p["extensions"]["com.openai"]["review"]["test_cases"]["positive"][4]
+        self.assertIn("actual returned change/task receipt", case["description"])
+        self.assertIn("pending", case["expected_output"])
+        self.assertIn("failed", case["expected_output"])
+        self.assertIn("target-locale product content", case["expected_output"])
+
 
 if __name__ == "__main__":
     unittest.main()

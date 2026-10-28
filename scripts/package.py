@@ -63,6 +63,12 @@ def source_state(source):
 
 
 def sync(source, allow_uncommitted=False, root=ROOT):
+    source = Path(source).resolve()
+    root = Path(root).resolve()
+    if source.is_relative_to(root) or root.is_relative_to(source):
+        raise ValueError("Source and destination repositories must not overlap")
+    if (root / "skills.lock.json").is_symlink():
+        raise ValueError("Refusing to replace symlinked skills lock")
     files = skill_files(source)
     commit, dirty = source_state(source)
     if (dirty or not commit) and not allow_uncommitted:
@@ -132,7 +138,8 @@ def check(root=ROOT, preview=False):
         raise ValueError("Vendored skills differ from the pinned source hashes")
     for rel in FIXED_FILES:
         path = root / rel
-        if not path.is_file() or path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
+        components = [root.joinpath(*Path(rel).parts[:i]) for i in range(1, len(Path(rel).parts) + 1)]
+        if not path.is_file() or any(part.is_symlink() for part in components) or not path.resolve().is_relative_to(root.resolve()):
             raise ValueError(f"Missing or unsafe package file: {rel}")
     return p, sorted((*FIXED_FILES, *files))
 
@@ -140,9 +147,13 @@ def check(root=ROOT, preview=False):
 def build(root=ROOT, preview=False):
     manifest, files = check(root, preview)
     out = root / "dist"
+    if out.is_symlink():
+        raise ValueError("Refusing symlinked output directory")
     out.mkdir(exist_ok=True)
     suffix = "-preview" if preview else ""
     archive = out / f"wisepim-chatgpt-{manifest['version']}{suffix}.zip"
+    if archive.is_symlink() or archive.with_suffix(".zip.sha256").is_symlink():
+        raise ValueError("Refusing symlinked output files")
     with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
         for rel in files:
             info = zipfile.ZipInfo(rel, date_time=(2026, 1, 1, 0, 0, 0))

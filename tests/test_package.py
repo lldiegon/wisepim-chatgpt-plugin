@@ -111,6 +111,68 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(lock["commit"], self.git("rev-parse", "HEAD").decode().strip())
         self.assertFalse(lock["sourceDirty"])
 
+    def test_rejects_identical_source_before_reads_or_mutation(self):
+        before = (self.root / "skills.lock.json").read_bytes()
+        with self.assertRaisesRegex(ValueError, "must not overlap"):
+            package.sync(self.root, allow_uncommitted=True, root=self.root)
+        self.assertEqual(before, (self.root / "skills.lock.json").read_bytes())
+
+    def test_rejects_parent_source_before_reads_or_mutation(self):
+        before = (self.root / "skills.lock.json").read_bytes()
+        with self.assertRaisesRegex(ValueError, "must not overlap"):
+            package.sync(self.root.parent, allow_uncommitted=True, root=self.root)
+        self.assertEqual(before, (self.root / "skills.lock.json").read_bytes())
+
+    def test_rejects_child_source_and_preserves_canonical_inputs(self):
+        nested = self.root / "skills" / "canonical-repository"
+        nested.mkdir()
+        sentinel = nested / "source.md"
+        sentinel.write_text("Canonical source must survive")
+        with self.assertRaisesRegex(ValueError, "must not overlap"):
+            package.sync(nested, allow_uncommitted=True, root=self.root)
+        self.assertEqual("Canonical source must survive", sentinel.read_text())
+
+    def test_rejects_alias_of_identical_source(self):
+        alias = self.root.parent / "alias"
+        alias.symlink_to(self.root, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "must not overlap"):
+            package.sync(alias, allow_uncommitted=True, root=self.root)
+
+    def test_rejects_symlinked_lock_without_writing_target(self):
+        lock = self.root / "skills.lock.json"
+        original = lock.read_bytes()
+        outside = self.root.parent / "outside-lock.json"
+        outside.write_bytes(original)
+        lock.unlink()
+        lock.symlink_to(outside)
+        with self.assertRaisesRegex(ValueError, "symlinked skills lock"):
+            package.sync(self.source, root=self.root)
+        self.assertEqual(original, outside.read_bytes())
+
+    def test_rejects_symlinked_asset_parent_even_within_root(self):
+        (self.root / "assets").rename(self.root / "asset-source")
+        (self.root / "assets").symlink_to(self.root / "asset-source", target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "unsafe package file"):
+            package.check(self.root)
+
+    def test_rejects_symlinked_output_directory(self):
+        outside = self.root.parent / "outside-output"
+        outside.mkdir()
+        (self.root / "dist").symlink_to(outside, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "symlinked output directory"):
+            package.build(self.root)
+        self.assertEqual([], list(outside.iterdir()))
+
+    def test_rejects_symlinked_output_archive(self):
+        out = self.root / "dist"
+        out.mkdir()
+        outside = self.root.parent / "outside.txt"
+        outside.write_text("Keep this content")
+        (out / "wisepim-chatgpt-0.1.0.zip").symlink_to(outside)
+        with self.assertRaisesRegex(ValueError, "symlinked output files"):
+            package.build(self.root)
+        self.assertEqual("Keep this content", outside.read_text())
+
 
 if __name__ == "__main__":
     unittest.main()

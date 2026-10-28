@@ -25,6 +25,8 @@ The ZIP is written to `dist/`, along with its SHA-256 checksum. It contains root
 file allowlist is packaged. `.git`, scripts, private reviewer credentials and
 unrelated files are never included. Skills are copied as ordinary files and
 pinned by source commit plus individual content hashes in `skills.lock.json`.
+Synchronization rejects overlapping source/destination repositories before reading
+or replacing files. Package inputs, lock files and output paths cannot use symlinks.
 
 For local drafts use `sync --allow-uncommitted`, `check --preview`, and
 `build --preview`. Preview ZIPs must not be submitted as releases. To change a

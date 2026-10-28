@@ -1,0 +1,47 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "wisepim",
+  "version": "0.1.0",
+  "description": "Audit catalog quality, prepare native translations, and review channel readiness with WisePIM.",
+  "author": {
+    "name": "WISEPIM",
+    "url": "https://wisepim.com"
+  },
+  "homepage": "https://wisepim.com",
+  "keywords": [
+    "pim",
+    "products",
+    "catalog",
+    "translation",
+    "data-quality"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "WISEPIM",
+        "shortDescription": "Audit products and prepare reviewed translations.",
+        "longDescription": "Inspect product quality, review available channel-readiness evidence, and prepare native WisePIM translations. Each connection belongs to one project. Consequential actions require approval in WisePIM; queued work is reported separately from completed results.",
+        "developerName": "WISEPIM",
+        "category": "Productivity",
+        "capabilities": [
+          "Read catalog quality",
+          "Prepare reviewed translations",
+          "Review channel-readiness evidence"
+        ],
+        "websiteURL": "https://wisepim.com",
+        "privacyPolicyURL": "https://wisepim.com/privacy",
+        "termsOfServiceURL": "https://wisepim.com/terms",
+        "defaultPrompt": [
+          "Find products with missing catalog content.",
+          "Prepare German translations for these products.",
+          "Review evidence that these products are ready for a sales channel."
+        ],
+        "brandColor": "#3B82F6",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png",
+        "supportURL": "https://wisepim.com/contact"
+      }
+    }
+  },
+  "repository": "https://github.com/lldiegon/wisepim-chatgpt-plugin"
+}

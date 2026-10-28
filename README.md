@@ -1,4 +1,4 @@
-# WisePIM for ChatGPT and Codex
+# WISEPIM for ChatGPT and Codex
 
 Connect WISEPIM, your product information management (PIM) workspace, to ChatGPT
 and Codex. Search your product catalog, inspect product data quality, and prepare
@@ -10,16 +10,16 @@ saved results. Channel-readiness reviews identify gaps and unknown requirements;
 they do not certify, export, or publish products.
 
 This repository contains public plugin packaging. The hosted MCP service belongs
-to the WisePIM frontend repository; no backend code or credentials are included here.
+to the WISEPIM frontend repository; no backend code or credentials are included here.
 
 The intended endpoint is `https://wisepim.com/mcp`. It is a deployment target,
 not a claim that the service is enabled, tested in ChatGPT, approved or published.
-The package is version `0.2.0` and connects to one explicitly authorized project.
+The package is version `0.2.1` and connects to one explicitly authorized project.
 
 
 ## Catalog workflows
 
-Sixteen bundled skills cover catalog quality, product web research, research-backed native enrichment, translation, bulk text cleanup, commerce analysis, selected-product SEO evidence and opportunity planning, supplier documents, images, taxonomy, prompts/settings, channel issues and native improvement jobs. The [canonical skill library](https://github.com/lldiegon/wisepim-skills) describes each workflow.
+Seventeen bundled skills cover catalog quality, product web research, research-backed native enrichment, translation, bulk text cleanup, commerce analysis, selected-product SEO evidence and opportunity planning, supplier documents, images, taxonomy, prompts/settings, channel issues and native improvement jobs. The [canonical skill library](https://github.com/lldiegon/wisepim-skills) describes each workflow.
 
 Research is evidence-only and requires its own execution permission. Findings do not automatically replace catalog fields or images. Stored supplier documents use supported bounded extraction; unsupported PDF/OCR and new file imports remain in their native workflows. Supplier jobs operate on already imported rows. Analytics reads persisted source evidence and reports mapping/coverage limits; it does not refresh providers or establish causal uplift.
 
@@ -64,7 +64,7 @@ client ID is not evidence that a client has been provisioned.
 No callback URL, client secret, bearer token, or customer account belongs in this repo.
 
 The package requests the explicit permissions described below for its expanded workflows. A translation preview requires approval in the ordinary
-authenticated WisePIM review page. The assistant cannot approve its own work.
+authenticated WISEPIM review page. The assistant cannot approve its own work.
 Queued work is not completed work. Read-only users and revoked connections must
 remain constrained by current server-side permissions.
 
@@ -87,3 +87,9 @@ Official references, checked 2026-10-28:
 - [Submit and publish](https://developers.openai.com/plugins/deploy/submission)
 - [Plugin guidelines](https://developers.openai.com/plugins/plugin-guidelines)
 - [Remote MCP review requirements](https://developers.openai.com/plugins/deploy/app-review)
+
+## Get started
+
+Use `start-with-wisepim` to create or resume an account and finish initial catalog setup. It works before connecting tools. Signup uses the native [WISEPIM onboarding flow](https://wisepim.com/onboarding), with user-controlled sign-in, verification and permissions. Once connected, the setup-status tool gives project-scoped next steps.
+
+A plugin is optional: standalone agents can read the public [onboarding guide](https://wisepim.com/onboarding.md), [agent index](https://wisepim.com/llms.txt) and [REST authentication guide](https://wisepim.com/auth.md). The public REST API uses project API keys and supports its documented catalog operations; MCP uses separate OAuth project consent. Neither package installation nor this guide proves the matching service is deployed. Always spell the product name WISEPIM.

@@ -13,6 +13,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "https://github.com/lldiegon/wisepim-skills"
 EXPECTED_SKILLS = {
+    'start-with-wisepim',
     'analyze-commerce-performance',
     'assess-product-images',
     'catalog-quality-audit',
@@ -143,7 +144,7 @@ def check(root=ROOT, preview=False):
     mcp = json.loads((root / "mcp.json").read_text())
     servers = mcp.get("mcpServers", {})
     if set(servers) != {"wisepim"}:
-        raise ValueError("Exactly one WisePIM remote server is required")
+        raise ValueError("Exactly one WISEPIM remote server is required")
     server = servers["wisepim"]
     if server.get("type") != "streamable-http" or server.get("url") != "https://wisepim.com/mcp":
         raise ValueError("MCP target must match the frontend service and OAuth audience")
@@ -231,7 +232,7 @@ def main():
     parser.add_argument("--allow-uncommitted", action="store_true", help="Preview sync only")
     parser.add_argument("--preview", action="store_true", help="Allow preview provenance for check/build")
     parser.add_argument("--review-metadata", type=Path, help="Build only: private test-case JSON outside this public repository")
-    parser.add_argument("--client-id", help="Non-secret public OAuth client ID actually registered with WisePIM")
+    parser.add_argument("--client-id", help="Non-secret public OAuth client ID actually registered with WISEPIM")
     args = parser.parse_args()
     try:
         if args.review_metadata is not None and args.command != "build":

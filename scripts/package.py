@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+import struct
 import subprocess
 import zipfile
 
@@ -178,11 +179,24 @@ def check(root=ROOT, preview=False):
         raise ValueError("onboardingSkill must refer to an included skill")
     if lock.get("files") != {rel: digest(data) for rel, data in files.items()}:
         raise ValueError("Vendored skills differ from the pinned source hashes")
+    for key, expected in (("composerIcon", "./assets/icon.png"), ("logo", "./assets/logo.png")):
+        if interface.get(key) != expected:
+            raise ValueError(f"{key} must reference its bundled WISEPIM PNG asset")
     for rel in FIXED_FILES:
         path = root / rel
         components = [root.joinpath(*Path(rel).parts[:i]) for i in range(1, len(Path(rel).parts) + 1)]
         if not path.is_file() or any(part.is_symlink() for part in components) or not path.resolve().is_relative_to(root.resolve()):
             raise ValueError(f"Missing or unsafe package file: {rel}")
+    # A 512px-or-larger brand master covers store recommendations; this is the
+    # package's release quality rule, not a claim that smaller PNGs are invalid
+    # under every host's accepted upload dimensions.
+    for rel in ("assets/icon.png", "assets/logo.png"):
+        image = (root / rel).read_bytes()
+        if len(image) < 33 or image[:8] != b"\x89PNG\r\n\x1a\n" or image[12:16] != b"IHDR":
+            raise ValueError(f"Bundled brand asset must be a PNG image: {rel}")
+        width, height = struct.unpack(">II", image[16:24])
+        if width != height or not 512 <= width <= 4096:
+            raise ValueError(f"Release brand master must be square and 512 to 4096 pixels: {rel}")
     return p, sorted((*FIXED_FILES, *files))
 
 

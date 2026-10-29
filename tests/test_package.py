@@ -2,6 +2,7 @@ import importlib.util
 import json
 from pathlib import Path
 import shutil
+import struct
 import subprocess
 import tempfile
 import unittest
@@ -53,6 +54,31 @@ class PackageTests(unittest.TestCase):
             self.assertIn("skills/catalog-quality-audit/SKILL.md", z.namelist())
             self.assertIn("mcp.json", z.namelist())
             self.assertTrue(all(not name.startswith("/") for name in z.namelist()))
+
+    def test_release_brand_master_rejects_500px_assets(self):
+        for name in ("icon.png", "logo.png"):
+            with self.subTest(asset=name):
+                p = self.root / "assets" / name
+                original = p.read_bytes()
+                p.write_bytes(original[:16] + struct.pack(">II", 500, 500) + original[24:])
+                with self.assertRaisesRegex(ValueError, "Release brand master"):
+                    package.check(self.root)
+                p.write_bytes(original)
+
+    def test_release_brand_master_rejects_non_square_asset(self):
+        p = self.root / "assets/icon.png"
+        original = p.read_bytes()
+        p.write_bytes(original[:16] + struct.pack(">II", 1024, 512) + original[24:])
+        with self.assertRaisesRegex(ValueError, "must be square"):
+            package.check(self.root)
+
+    def test_manifest_icons_must_match_bundled_assets(self):
+        p = self.root / "plugin.json"
+        manifest = json.loads(p.read_text())
+        manifest["extensions"]["com.openai"]["interface"]["composerIcon"] = "https://example.invalid/other.png"
+        p.write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError, "composerIcon must reference"):
+            package.check(self.root)
 
     def test_rejects_tampered_vendored_skill(self):
         path = self.root / "skills/catalog-quality-audit/SKILL.md"

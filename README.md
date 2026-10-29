@@ -14,8 +14,8 @@ to the WISEPIM frontend repository; no backend code or credentials are included 
 
 The intended endpoint is `https://wisepim.com/mcp`. It is a deployment target,
 not a claim that the service is enabled, tested in ChatGPT, approved or published.
-The package is version `0.2.5` and connects to one explicitly authorized project.
-It includes seventeen skills for the matching 35-tool MCP service contract.
+The package is version `0.3.0` and connects to one explicitly authorized project.
+It includes seventeen skills for the matching 53-tool MCP service contract.
 
 
 ## Catalog workflows
@@ -24,9 +24,9 @@ Seventeen bundled skills cover guided account setup, catalog quality, product we
 
 Research is evidence-only and requires its own execution permission. Findings do not automatically replace catalog fields or images. Stored supplier documents use supported bounded extraction; unsupported PDF/OCR and new file imports remain in their native workflows. Supplier jobs operate on already imported rows. Image workflows assess stored evidence and can retrieve existing images through supported native jobs; MCP does not generate images, video or audio. Analytics reads persisted source evidence and reports mapping/coverage limits; it does not refresh providers or establish causal uplift.
 
-Discover native job schemas and get a planning-only estimate before preparing a job. A catalog-job budget is an admission estimate ceiling, not a hard final-spend cap. Native job field policies and review gates remain authoritative after launch; the plugin does not expose arbitrary automation, bypass a gate or publish products. Track actual task/run receipts and reread saved products before claiming completion.
+Choose the declared job tool family and get a planning-only estimate before preparing a job. Gap filling, missing-image retrieval, category mapping, ad preparation and supplier completion each have separate typed estimate, preview and start tools. A catalog-job budget is an admission estimate ceiling, not a hard final-spend cap. Native job field policies and review gates remain authoritative after launch; the plugin does not expose arbitrary automation, bypass a gate or publish products. Track actual task/run receipts and reread saved products before claiming completion.
 
-The expanded package uses explicit catalog, quality, task, settings, prompts and analytics reads; catalog/settings/prompt writes under the configured approval policy; and enrichment, research and catalog-job execution. Existing grants do not gain new scopes automatically. Reconnect and consent only to the operations needed for your account and workflows.
+Each durable preview identifies its matching `apply_tool` from twelve declared executors. Execution accepts only the frozen `change_id`; a receipt cannot select a different operation or introduce another tool. The expanded package uses explicit catalog, quality, task, settings, prompts and analytics reads; catalog/settings/prompt writes under the configured approval policy; and enrichment, research and catalog-job execution. Existing grants do not gain new scopes automatically. Reconnect and consent only to the operations needed for your account and workflows.
 
 ## Build
 

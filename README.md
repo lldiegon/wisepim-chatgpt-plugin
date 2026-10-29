@@ -5,8 +5,8 @@ product information management (PIM) workspace. Get help creating an account and
 setting up a first catalog, or connect an existing project. Research product facts,
 enrich descriptions and attributes, translate content, and clean inconsistent data.
 
-Inspect supplier evidence, images, taxonomy and channel issues. Use available
-commerce and search analytics to prioritize improvements, then prepare native
+Explore interactive catalog, product and change views. Inspect supplier evidence,
+images, taxonomy and channel issues. Use available commerce and search analytics to prioritize improvements, then prepare native
 catalog jobs using your WISEPIM settings and saved prompts. Use the configured approval policy and follow the actual task through to saved results.
 
 This repository contains public plugin packaging. The hosted MCP service belongs
@@ -14,7 +14,7 @@ to the WISEPIM frontend repository; no backend code or credentials are included 
 
 The intended endpoint is `https://wisepim.com/mcp`. It is a deployment target,
 not a claim that the service is enabled, tested in ChatGPT, approved or published.
-The package is version `0.3.1` and connects to one explicitly authorized project.
+The package is version `0.3.2` and connects to one explicitly authorized project.
 It includes seventeen skills for the matching 53-tool MCP service contract.
 
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wisepim",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Set up WISEPIM, research product facts, enrich and translate content, and run bounded catalog workflows with configurable approval.",
   "author": {
     "name": "WISEPIM",
@@ -25,7 +25,7 @@
       "interface": {
         "displayName": "WISEPIM",
         "shortDescription": "AI PIM for product catalogs",
-        "longDescription": "Bring your product catalog into the conversation with WISEPIM, the AI-powered product information management (PIM) workspace. Get help creating an account and setting up a first catalog, or connect an existing project. Research product facts with source evidence, enrich descriptions and attributes, translate content, and clean inconsistent data. Inspect supplier documents, images, taxonomy and channel issues. Use available commerce and search analytics to prioritize the products that need attention.\n\nPrepare improvements using your WISEPIM settings and saved prompts, inspect the selected products and proposed operation, and follow the actual task through to saved results. Each connection authorizes one project, with explicit permissions for its supported workflows. Approval is configurable per connection and defaults off for new connections. The account owner can enable required approval in WISEPIM; previews, project permissions and source checks remain enforced. Channel export and publication are not included.",
+        "longDescription": "Bring your product catalog into the conversation with WISEPIM, the AI-powered product information management (PIM) workspace. Get help creating an account and setting up a first catalog, or connect an existing project. Research product facts with source evidence, enrich descriptions and attributes, translate content, and clean inconsistent data. Inspect supplier documents, images, taxonomy and channel issues. Explore interactive catalog and product views, inspect stored quality scores, and use available commerce and search analytics to prioritize the products that need attention.\n\nPrepare improvements using your WISEPIM settings and saved prompts, inspect the selected products and proposed operation, and follow the actual task through to saved results. Interactive change views show the frozen selection, configured approval policy and recorded execution state. Each connection authorizes one project, with explicit permissions for its supported workflows. Approval is configurable per connection and defaults off for new connections. The account owner can enable required approval in WISEPIM; previews, project permissions and source checks remain enforced. Channel export and publication are not included.",
         "developerName": "WISEPIM",
         "category": "Productivity",
         "capabilities": [
@@ -49,7 +49,7 @@
       },
       "onboardingSkill": "./skills/start-with-wisepim/SKILL.md",
       "publication": {
-        "release_notes": "Version 0.3.1 bundles canonical 1024px WISEPIM brand assets for store listings and the conversation composer."
+        "release_notes": "Version 0.3.2 clarifies interactive catalog, product and change views, configurable approval and saved-result verification. Includes 17 skills for the 53-tool contract and canonical 1024px WISEPIM brand assets."
       }
     }
   },
